@@ -40,7 +40,7 @@
 ### 从源码运行
 
 ```bash
-git clone https://github.com/shen1306009009/GuLianDong.git
+git clone https://github.com/shen13060069009/GuLianDong.git
 cd GuLianDong
 pip install -r requirements.txt
 python main.py
