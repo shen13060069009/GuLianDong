@@ -1,0 +1,7 @@
+{
+  "_说明": "复制为 config.json 后填入自己的值。ed25519_seed 用 python -c \"import secrets;print(secrets.token_hex(32))\" 生成；admin_token 自行设定。",
+  "ed25519_seed": "",
+  "ed25519_pub": "",
+  "admin_token": "",
+  "port": 8787
+}

@@ -1,0 +1,44 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ---- 打包产物（体积大，走 Release / 官网下载，不进 Git）----
+dist/
+out/
+build/_prev_*/
+*.log
+
+# ---- PyInstaller 中间文件（保留图标等源资源，忽略缓存与中间目录）----
+build/__pycache__/
+build/stocklens/
+build/_prev_*/
+build/tools/
+build/*.log
+build/icon_wr/*.png
+.tox/
+
+# ---- 授权服务端：含私钥与运行数据，绝不入库 ----
+license_server/config.json
+license_server/license.db
+license_server/wxpay/
+# 用 config.example.json 作为模板替代
+
+# ---- 本地配置与运行产物 ----
+config.local.json
+logs/
+*.db
+*.sqlite3
+
+# ---- 审核素材（本地自检用，不开源；18MB 截图）----
+review/
+
+# ---- 编辑器 ----
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+desktop.ini

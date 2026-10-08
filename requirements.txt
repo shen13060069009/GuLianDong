@@ -1,0 +1,34 @@
+# 股联动 GuLianDong 运行依赖
+# Python 3.11+（开发环境为 3.13）
+#
+#   pip install -r requirements.txt
+#   python main.py
+#
+# 打包 exe：
+#   python -m PyInstaller --clean --noconfirm stocklens.spec
+
+# ---- GUI ----
+PySide6_Essentials==6.11.2
+
+# ---- OCR（识别引擎，纯本地推理）----
+rapidocr-onnxruntime==1.2.3
+# ⚠ onnxruntime 必须锁 1.20.0：1.27.x 的 DLL 在部分 Win10 上加载失败
+onnxruntime==1.20.0
+opencv-python-headless==4.10.0.84   # headless 版：不含 Qt/GTK 依赖，打包体积更小
+numpy==2.5.3
+PyYAML==6.0.3
+pyclipper==1.4.0
+shapely==2.1.2
+six==1.17.0
+
+# ---- 股票名匹配（错字纠正 / 别名）----
+pyahocorasick==2.3.1
+pypinyin==0.55.0
+
+# ---- 屏幕抓取 / Windows 窗口与消息 ----
+pywin32==312
+mss==10.2.0
+
+# ---- 打包（仅开发时需要，发布版不需要）----
+pyinstaller==6.22.3
+pyinstaller-hooks-contrib==2026.8

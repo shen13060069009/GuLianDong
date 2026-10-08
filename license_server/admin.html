@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>股联动 · 授权管理</title>
+<style>
+  :root { --bg:#f5f6f8; --card:#fff; --line:#e4e7ec; --txt:#1f2430;
+          --sub:#667085; --ok:#13a86a; --warn:#d92d20; --accent:#2f6fed; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--txt);
+         font:14px/1.6 "Segoe UI","Microsoft YaHei",sans-serif; padding:28px; }
+  .wrap { max-width:1060px; margin:0 auto; }
+  h1 { font-size:19px; margin-bottom:4px; }
+  .sub { color:var(--sub); font-size:12.5px; margin-bottom:20px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px;
+          padding:18px 20px; margin-bottom:16px; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  input, button { font:inherit; border-radius:8px; border:1px solid var(--line);
+                  padding:8px 12px; outline:none; }
+  input:focus { border-color:var(--accent); }
+  button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
+  button.ghost { background:#fff; color:var(--txt); border:1px solid var(--line); }
+  button.danger { background:var(--warn); }
+  button.ok { background:var(--ok); }
+  button:disabled { opacity:.5; cursor:default; }
+  table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line);
+           white-space:nowrap; }
+  td.code { font-family:Consolas,monospace; font-weight:600; user-select:all; }
+  .tag { display:inline-block; padding:1px 8px; border-radius:20px; font-size:12px; }
+  .unused  { background:#eef1f5; color:var(--sub); }
+  .active  { background:#e6f6ee; color:var(--ok); }
+  .banned  { background:#fdecea; color:var(--warn); }
+  #login { max-width:360px; margin:90px auto; text-align:center; }
+  #login input { width:100%; margin:14px 0; }
+  .stats { display:flex; gap:22px; margin-bottom:6px; font-size:13px; color:var(--sub); }
+  .stats b { color:var(--txt); font-size:17px; margin-right:3px; }
+  #msg { margin-left:auto; color:var(--sub); font-size:12.5px; }
+  .muted { color:var(--sub); font-size:12px; }
+  .mi { max-width:220px; overflow:hidden; text-overflow:ellipsis; }
+  @media (max-width:720px){ td.hide-s { display:none; } th.hide-s { display:none; } }
+</style>
+</head>
+<body>
+
+<div id="login" class="card">
+  <h1>股联动 · 授权管理</h1>
+  <p class="sub">输入管理令牌</p>
+  <input id="tok" type="password" placeholder="admin token">
+  <button style="width:100%" onclick="init()">进入</button>
+</div>
+
+<div id="main" class="wrap" style="display:none">
+  <h1>股联动 · 授权管理</h1>
+  <p class="sub">买断制 ¥98/台 · 1 码绑 1 机 · 换机先解绑 · 封禁后客户端 14 天内心跳失效</p>
+
+  <div class="card">
+    <div class="stats" id="stats"></div>
+    <div class="row">
+      <button onclick="create(1)">生成 1 个激活码</button>
+      <button class="ghost" onclick="create(10)">批量 10 个</button>
+      <input id="note" placeholder="备注（买家 ID / 订单号）" style="flex:1;min-width:180px">
+      <span id="msg"></span>
+    </div>
+    <div id="newcodes" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="q" placeholder="搜索激活码 / 备注 / 机器码" style="flex:1" oninput="render()">
+      <button class="ghost" onclick="load()">刷新</button>
+    </div>
+    <table>
+      <thead><tr>
+        <th>激活码</th><th>状态</th><th class="hide-s">备注</th>
+        <th>机器指纹</th><th class="hide-s">激活时间</th><th class="hide-s">最近心跳</th>
+        <th>操作</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h1 style="font-size:15px;margin-bottom:2px">📣 软件内引流位</h1>
+    <p class="sub" style="margin-bottom:12px">展示在客户端联动菜单底部 / 托盘菜单 / 授权窗口，保存后 1 小时内全量生效</p>
+    <div class="row">
+      <label style="font-size:13px"><input type="checkbox" id="p_on" style="width:auto"> 启用引流位</label>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="p_title" placeholder="标题，如：实时消息中心" style="width:180px">
+      <input id="p_desc" placeholder="描述文案" style="flex:1;min-width:200px">
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="p_url" placeholder="跳转网址 https://..." style="flex:1;min-width:220px">
+      <input id="p_button" placeholder="按钮文字，如：免费看实时消息" style="width:200px">
+      <button onclick="savePromo()">保存引流设置</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1 style="font-size:15px;margin-bottom:2px">💚 自愿赞助入口（免费开源版）</h1>
+    <p class="sub" style="margin-bottom:12px">展示在客户端「关于」窗口。v1.1.0 起软件完全免费开源，此处<b>仅用于自愿赞助</b>，赞助与否功能完全一致 —— 关闭或留空链接则客户端整栏不显示。</p>
+    <div class="row">
+      <label style="font-size:13px"><input type="checkbox" id="n_on" style="width:auto"> 启用赞助入口</label>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="n_title" placeholder="标题，如：支持开源项目" style="width:180px">
+      <input id="n_desc" placeholder="描述文案" style="flex:1;min-width:200px">
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="n_url" placeholder="跳转网址（爱发电 / GitHub Sponsors 等）" style="flex:1;min-width:220px">
+      <input id="n_button" placeholder="按钮文字，如：自愿赞助" style="width:200px">
+      <button onclick="saveDonate()">保存赞助设置</button>
+    </div>
+    <p class="muted" style="margin-top:10px">
+      旧的激活码 / 微信付款自动发货逻辑<b>已不再使用</b>（软件无任何付费墙），此处保留仅为兼容旧数据。
+    </p>
+  </div>
+</div>
+
+<script>
+let TOK = localStorage.getItem('sl_admin_tok') || '';
+let DATA = [];
+// 直连 :8787/admin 时用 /api；经 nginx /sl-api/admin 反代时用 /sl-api/api
+const BASE = location.pathname.indexOf('/sl-api') === 0 ? '/sl-api/api' : '/api';
+
+async function api(path, body) {
+  const r = await fetch(BASE + path, { method:'POST',
+    headers: {'Content-Type':'application/json', 'X-Admin-Token': TOK},
+    body: JSON.stringify(body || {}) });
+  if (r.status === 403) { logout(); throw new Error('token 无效'); }
+  return r.json();
+}
+
+async function init() {
+  TOK = document.getElementById('tok').value.trim();
+  await api('/api/admin/list');
+  localStorage.setItem('sl_admin_tok', TOK);
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('main').style.display = '';
+  load();
+  loadOps().catch(() => {});
+}
+
+function logout() {
+  localStorage.removeItem('sl_admin_tok');
+  location.reload();
+}
+
+function flash(t) {
+  const el = document.getElementById('msg');
+  el.textContent = t; el.style.color = '#667085';
+  setTimeout(() => el.textContent = '', 2600);
+}
+
+async function create(n) {
+  const note = document.getElementById('note').value.trim();
+  const r = await api('/api/admin/create', {count:n, note});
+  document.getElementById('newcodes').innerHTML =
+    '<div class="card" style="background:#f0f7f2;border-color:#bfe3cb">' +
+    r.codes.map(c => '<div class="code" style="font-size:16px">'+c+'</div>').join('') +
+    '<button class="ghost" onclick="navigator.clipboard.writeText(\'' +
+    r.codes.join('\n') + '\')">复制全部</button></div>';
+  load();
+}
+
+async function load() {
+  const r = await api('/api/admin/list');
+  DATA = r.rows;
+  const st = {unused:0, active:0, banned:0};
+  DATA.forEach(x => st[x.status] = (st[x.status]||0)+1);
+  document.getElementById('stats').innerHTML =
+    '<span><b>'+DATA.length+'</b>总码数</span>' +
+    '<span><b>'+(st.active||0)+'</b>已激活</span>' +
+    '<span><b>'+(st.unused||0)+'</b>未使用</span>' +
+    '<span><b>'+(st.banned||0)+'</b>已封禁</span>';
+  render();
+}
+
+function render() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const rows = DATA.filter(x => !q ||
+    x.code.toLowerCase().includes(q) || (x.note||'').toLowerCase().includes(q) ||
+    (x.machine_id||'').toLowerCase().includes(q));
+  document.getElementById('rows').innerHTML = rows.map(x =>
+    '<tr>' +
+    '<td class="code">'+x.code+'</td>' +
+    '<td><span class="tag '+x.status+'">'+({unused:'未使用',active:'已激活',banned:'已封禁'})[x.status]+'</span></td>' +
+    '<td class="hide-s">'+(x.note||'')+'</td>' +
+    '<td class="muted mi" title="'+(x.machine_id||'')+'">'+(x.machine_id||'—')+'</td>' +
+    '<td class="hide-s muted">'+(x.activated_at||'—')+'</td>' +
+    '<td class="hide-s muted">'+(x.last_seen||'—')+'</td>' +
+    '<td>' +
+      (x.machine_id ? '<button class="ghost" onclick="act(\''+x.code+'\',\'unbind\')">解绑</button> ' : '') +
+      (x.status === 'banned'
+        ? '<button class="ok" onclick="act(\''+x.code+'\',\'ban\',false)">解封</button>'
+        : '<button class="danger" onclick="act(\''+x.code+'\',\'ban\',true)">封禁</button>') +
+    '</td></tr>').join('') || '<tr><td colspan="7" class="muted">无记录</td></tr>';
+}
+
+async function act(code, action, flag) {
+  if (action === 'unbind' && !confirm('解绑后该激活码可在新机器重新激活，确认？')) return;
+  if (action === 'ban' && flag && !confirm('封禁后买家客户端将在心跳周期内失效，确认？')) return;
+  await api('/api/admin/' + action, {code, ban:flag});
+  flash(action === 'unbind' ? '已解绑' : (flag ? '已封禁' : '已解封'));
+  load();
+}
+
+// ---------------- 引流 / 自愿赞助设置 ----------------
+async function loadOps() {
+  // 引流配置（公开接口也行，这里走 admin 保持登录态一致）
+  const pr = await fetch(BASE + '/promo').then(r => r.json());
+  document.getElementById('p_on').checked = !!pr.enabled;
+  document.getElementById('p_title').value = pr.title || '';
+  document.getElementById('p_desc').value = pr.desc || '';
+  document.getElementById('p_url').value = pr.url || '';
+  document.getElementById('p_button').value = pr.button || '';
+  // 自愿赞助配置（免费开源版唯一保留的「钱」相关入口）
+  const dn = await fetch(BASE + '/donate').then(r => r.json());
+  document.getElementById('n_on').checked = !!dn.enabled;
+  document.getElementById('n_title').value = dn.title || '';
+  document.getElementById('n_desc').value = dn.desc || '';
+  document.getElementById('n_url').value = dn.url || '';
+  document.getElementById('n_button').value = dn.button || '';
+}
+
+async function savePromo() {
+  const r = await api('/api/admin/promo', {
+    enabled: document.getElementById('p_on').checked,
+    title: document.getElementById('p_title').value.trim(),
+    desc: document.getElementById('p_desc').value.trim(),
+    url: document.getElementById('p_url').value.trim(),
+    button: document.getElementById('p_button').value.trim(),
+  });
+  flash(r.msg || '已保存');
+}
+
+async function saveDonate() {
+  const r = await api('/api/admin/donate', {
+    enabled: document.getElementById('n_on').checked,
+    title: document.getElementById('n_title').value.trim(),
+    desc: document.getElementById('n_desc').value.trim(),
+    url: document.getElementById('n_url').value.trim(),
+    button: document.getElementById('n_button').value.trim(),
+  });
+  flash(r.msg || '已保存');
+  loadOps();
+}
+
+if (TOK) {
+  document.getElementById('tok').value = TOK;
+  init().catch(() => {});
+}
+</script>
+</body>
+</html>

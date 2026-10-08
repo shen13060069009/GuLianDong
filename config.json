@@ -1,0 +1,47 @@
+{
+  "auto_recognize": false,
+  "sources": [
+    "Weixin.exe",
+    "WeChat.exe",
+    "DingTalk.exe",
+    "Feishu.exe",
+    "Lark.exe",
+    "WXWork.exe"
+  ],
+  "targets": [
+    "tdx",
+    "em",
+    "ths"
+  ],
+  "poll_interval": 0.25,
+  "change_thresh": 0.002,
+  "ocr": {
+    "gpu": "auto",
+    "det_limit": 900,
+    "det_coef": 0.85,
+    "det_range": [
+      640,
+      2400
+    ],
+    "rec_batch": 24,
+    "use_cls": false,
+    "cpu_threads": 0
+  },
+  "match": {
+    "weak_mode": "context"
+  },
+  "overlay": {
+    "only_when_foreground": true,
+    "adaptive_palette": true,
+    "click_modifier": "ctrl"
+  },
+  "linkage": {
+    "prefer_background": true
+  },
+  "snip": {
+    "enabled": true,
+    "trigger": "alt",
+    "select": true,
+    "auto_hide": 20
+  }
+}
