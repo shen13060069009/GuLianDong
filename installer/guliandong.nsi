@@ -3,7 +3,7 @@
 ;
 ; 构建（本机已装 NSIS 3.x）：
 ;     "C:\Program Files (x86)\NSIS\makensis.exe" -INPUTCHARSET UTF8 ^
-;         /DAPP_VERSION=1.1.0 installer\guliandong.nsi
+;         /DAPP_VERSION=1.1.1 installer\guliandong.nsi
 ;
 ; 打包对象是 PyInstaller onedir 产物整个目录（dist/GuLianDong/）。
 ;
@@ -25,7 +25,7 @@
 !define PUBLISHER "镜魔方重庆科技"
 
 !ifndef APP_VERSION
-  !define APP_VERSION "1.1.0"
+  !define APP_VERSION "1.1.1"
 !endif
 
 ; 打包源目录。默认 dist\GuLianDong，可用 /DAPP_SRC=... 覆盖——
