@@ -40,7 +40,7 @@
 ### 从源码运行
 
 ```bash
-git clone https://github.com/gldong/GuLianDong.git
+git clone https://github.com/shen1306009009/GuLianDong.git
 cd GuLianDong
 pip install -r requirements.txt
 python main.py
@@ -95,6 +95,10 @@ src/
   ed25519.py            Ed25519（保留供签名场景使用）
 tools/                  验证脚本
 data/                   股票数据与词表
+installer/              NSIS 安装包脚本
+website/                官网源码（gldong.com）
+license_server/         可选：官方自建的发码 / 支付服务端
+                        （免费开源版客户端不依赖它；配置见 config.example.json）
 ```
 
 ## 免责声明

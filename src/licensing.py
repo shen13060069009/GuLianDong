@@ -40,7 +40,7 @@ APP_VERSION = "1.1.0"
 APP_NAME = "股联动 GuLianDong"
 APP_TAGLINE = "聊天里的股票，一键联动行情软件"
 APP_HOMEPAGE = "https://www.gldong.com"
-APP_REPO = "https://github.com/gldong/GuLianDong"
+APP_REPO = "https://github.com/shen1306009009/GuLianDong"
 APP_LICENSE = "MIT License"
 
 
