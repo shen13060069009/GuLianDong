@@ -36,6 +36,7 @@ logs/
 # ---- 审核素材（本地自检用，不开源；18MB 截图）----
 review/
 review2/
+review3/
 
 # ---- 编辑器 ----
 .idea/
